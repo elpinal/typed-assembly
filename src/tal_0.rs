@@ -151,12 +151,12 @@ impl<'a> TypeCheck for &'a Seq {
             inst.type_of((h, f))?;
         }
         let f0 = self.1.type_of((h, f))?.code()?;
-        Some(Type::Code(f0))
+        if f != &f0 { None } else { Some(Type::Code(f0)) }
     }
 }
 
 impl<'a> TypeCheck for &'a Files<Operand> {
-    type Input = (&'a Heap<Type>);
+    type Input = &'a Heap<Type>;
     type Output = Option<Files<Type>>;
 
     fn type_of(self, h: Self::Input) -> Self::Output {
