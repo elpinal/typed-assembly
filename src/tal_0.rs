@@ -168,6 +168,20 @@ impl<'a> TypeCheck for &'a Files<Operand> {
     }
 }
 
+impl<'a> TypeCheck for &'a Machine {
+    type Input = (&'a Heap<Type>);
+    type Output = Option<()>;
+
+    fn type_of(self, h: Self::Input) -> Self::Output {
+        let ty1 = self.regs.type_of(h)?;
+        match self.seq.type_of((h, &ty1))? {
+            Type::Code(ref ty2) if ty1 == *ty2 => Some(()),
+            _ => None,
+        }
+    }
+}
+
+
 impl Operand {
     fn value(&self) -> Option<Value> {
         match *self {
