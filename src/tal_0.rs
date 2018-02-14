@@ -1,17 +1,17 @@
 use std::collections::HashMap;
 
-pub struct Seq(Vec<Inst>, Opearand);
+pub struct Seq(Vec<Inst>, Operand);
 
 pub enum Inst {
-    Mov(Register, Opearand),
-    Add(Register, Register, Opearand),
-    IfJump(Register, Opearand),
+    Mov(Register, Operand),
+    Add(Register, Register, Operand),
+    IfJump(Register, Operand),
 }
 
-pub enum Opearand {
+pub enum Operand {
     Val(Value),
     Reg(Register),
-    TApp(Box<Opearand>, Type),
+    TApp(Box<Operand>, Type),
 }
 
 #[derive(Clone)]
@@ -24,7 +24,7 @@ pub type Register = usize;
 
 pub struct Machine {
     heap: Heap<Seq>,
-    regs: Files<Opearand>,
+    regs: Files<Operand>,
     seq: Seq,
 }
 
@@ -61,12 +61,12 @@ impl<'a> TypeCheck for &'a Value {
 }
 
 
-impl<'a> TypeCheck for &'a Opearand {
+impl<'a> TypeCheck for &'a Operand {
     type Input = (&'a Heap<Type>, &'a Files<Type>);
     type Output = Option<Type>;
 
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
-        use self::Opearand::*;
+        use self::Operand::*;
         match *self {
             Val(ref v) => v.type_of(h),
             Reg(r) => f.get(&r).cloned(),
@@ -120,18 +120,18 @@ impl<'a> TypeCheck for &'a Inst {
             }
             Add(r1, r2, ref o) => {
                 {
-                    let want_int = |op: &Opearand| {
+                    let want_int = |op: &Operand| {
                         let ty = op.type_of((h, f))?;
                         if ty != Int { None } else { Some(()) }
                     };
-                    want_int(&Opearand::Reg(r2))?;
+                    want_int(&Operand::Reg(r2))?;
                     want_int(o)?;
                 }
                 f.insert(r1, Int);
                 Some(())
             }
             IfJump(r, ref o) => {
-                if Opearand::Reg(r).type_of((h, f))? == Int && &o.type_of((h, f))?.code()? == f {
+                if Operand::Reg(r).type_of((h, f))? == Int && &o.type_of((h, f))?.code()? == f {
                     Some(())
                 } else {
                     None
@@ -154,7 +154,7 @@ impl<'a> TypeCheck for &'a Seq {
     }
 }
 
-impl<'a> TypeCheck for &'a Files<Opearand> {
+impl<'a> TypeCheck for &'a Files<Operand> {
     type Input = (&'a Heap<Type>);
     type Output = Option<Files<Type>>;
 
@@ -167,10 +167,10 @@ impl<'a> TypeCheck for &'a Files<Opearand> {
     }
 }
 
-impl Opearand {
+impl Operand {
     fn value(&self) -> Option<Value> {
         match *self {
-            Opearand::Val(ref v) => Some(v.clone()),
+            Operand::Val(ref v) => Some(v.clone()),
             _ => None,
         }
     }
