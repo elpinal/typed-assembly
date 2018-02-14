@@ -154,6 +154,28 @@ impl<'a> TypeCheck for &'a Seq {
     }
 }
 
+impl<'a> TypeCheck for &'a Files<Opearand> {
+    type Input = (&'a Heap<Type>);
+    type Output = Option<Files<Type>>;
+
+    fn type_of(self, h: Self::Input) -> Self::Output {
+        let mut m = HashMap::with_capacity(self.len());
+        for (&r, o) in self.iter() {
+            m.insert(r, o.value()?.type_of(h)?);
+        }
+        Some(m)
+    }
+}
+
+impl Opearand {
+    fn value(&self) -> Option<Value> {
+        match *self {
+            Opearand::Val(ref v) => Some(v.clone()),
+            _ => None,
+        }
+    }
+}
+
 impl Type {
     fn code(self) -> Option<Files<Type>> {
         if let Type::Code(f) = self {
