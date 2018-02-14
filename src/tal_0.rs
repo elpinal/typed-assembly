@@ -12,6 +12,7 @@ pub enum Opearand {
     Int(isize),
     Label(usize),
     Reg(Register),
+    TApp(Box<Opearand>, Type),
 }
 
 pub type Register = usize;
@@ -51,6 +52,37 @@ impl<'a> TypeCheck for &'a Opearand {
             Int(..) => Some(Type::Int),
             Label(n) => h.get(&n).cloned(),
             Reg(r) => f.get(&r).cloned(),
+            TApp(ref o, ref ty) => {
+                match o.type_of((h, f))? {
+                    Type::Abs(ty1) => Some(ty1.subst_top(ty)),
+                    _ => None,
+                }
+            }
+        }
+    }
+}
+
+impl Type {
+    fn subst_top(self, t: &Type) -> Self {
+        let f = |n, c| if n == c {
+            t.clone()
+        } else if n > c {
+            Type::Var(n - 1)
+        } else {
+            Type::Var(n)
+        };
+        self.map(&f, 0)
+    }
+
+    fn map<F>(self, f: &F, c: usize) -> Self
+    where
+        F: Fn(usize, usize) -> Type,
+    {
+        use self::Type::*;
+        match self {
+            Var(n) => f(n, c),
+            Abs(ty) => Abs(Box::new(ty.map(f, c + 1))),
+            _ => self,
         }
     }
 }
