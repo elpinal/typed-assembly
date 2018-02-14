@@ -142,12 +142,13 @@ impl<'a> TypeCheck for &'a Inst {
 }
 
 impl<'a> TypeCheck for &'a Seq {
-    type Input = (&'a Heap<Type>, &'a mut Files<Type>);
+    type Input = (&'a Heap<Type>, &'a Files<Type>);
     type Output = Option<Type>;
 
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
+        let f = &mut f.clone();
         for inst in &self.0 {
-            inst.type_of((h, f))?
+            inst.type_of((h, f))?;
         }
         let f0 = self.1.type_of((h, f))?.code()?;
         Some(Type::Code(f0))
