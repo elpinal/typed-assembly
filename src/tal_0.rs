@@ -9,10 +9,15 @@ pub enum Inst {
 }
 
 pub enum Opearand {
-    Int(isize),
-    Label(usize),
+    Val(Value),
     Reg(Register),
     TApp(Box<Opearand>, Type),
+}
+
+#[derive(Clone)]
+pub enum Value {
+    Int(isize),
+    Label(usize),
 }
 
 pub type Register = usize;
@@ -42,6 +47,20 @@ pub trait TypeCheck {
     fn type_of(self, input: Self::Input) -> Self::Output;
 }
 
+impl<'a> TypeCheck for &'a Value {
+    type Input = &'a Heap<Type>;
+    type Output = Option<Type>;
+
+    fn type_of(self, h: Self::Input) -> Self::Output {
+        use self::Value::*;
+        match *self {
+            Int(..) => Some(Type::Int),
+            Label(n) => h.get(&n).cloned(),
+        }
+    }
+}
+
+
 impl<'a> TypeCheck for &'a Opearand {
     type Input = (&'a Heap<Type>, &'a Files<Type>);
     type Output = Option<Type>;
@@ -49,8 +68,7 @@ impl<'a> TypeCheck for &'a Opearand {
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         use self::Opearand::*;
         match *self {
-            Int(..) => Some(Type::Int),
-            Label(n) => h.get(&n).cloned(),
+            Val(ref v) => v.type_of(h),
             Reg(r) => f.get(&r).cloned(),
             TApp(ref o, ref ty) => {
                 match o.type_of((h, f))? {
