@@ -168,6 +168,22 @@ impl<'a> TypeCheck for &'a Files<Operand> {
     }
 }
 
+impl<'a> TypeCheck for &'a Heap<Seq> {
+    type Input = (&'a Heap<Type>, &'a Files<Type>);
+    type Output = Option<()>;
+
+    fn type_of(self, (h, f): Self::Input) -> Self::Output {
+        for (l, s) in self.iter() {
+            let ty = s.type_of((h, f))?;
+            if &ty != h.get(l)? {
+                return None;
+            }
+            //TODO: check ftv.
+        }
+        Some(())
+    }
+}
+
 impl<'a> TypeCheck for &'a Machine {
     type Input = (&'a Heap<Type>);
     type Output = Option<()>;
