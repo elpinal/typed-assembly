@@ -193,6 +193,7 @@ impl<'a> TypeCheck for &'a Machine {
 
     fn type_of(self, h: Self::Input) -> Self::Output {
         let ty1 = self.regs.type_of(h)?;
+        self.heap.type_of((h, &ty1))?;
         match self.seq.type_of((h, &ty1))? {
             Type::Code(ref ty2) if ty1 == *ty2 => Some(()),
             _ => None,
