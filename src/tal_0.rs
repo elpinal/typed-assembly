@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::mem;
 
 #[derive(Clone)]
 pub struct Seq(Vec<Inst>, Operand);
@@ -264,7 +265,8 @@ impl Type {
 
 impl Machine {
     fn eval(&mut self) -> Option<()> {
-        for x in self.seq.0.into_iter() {
+        let v = mem::replace(&mut self.seq.0, vec![]);
+        for x in v.into_iter() {
             use self::Inst::*;
             match x {
                 Mov(r, o) => {
@@ -279,7 +281,8 @@ impl Machine {
                 IfJump(r, o) => {
                     let n = self.regs.get(&r)?.int()?;
                     if n == 0 {
-                        self.seq = self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()?
+                        self.seq = self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()?;
+                        return self.eval();
                     }
                 }
             }
