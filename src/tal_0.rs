@@ -1,24 +1,24 @@
 use std::collections::HashMap;
 use std::mem;
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Seq(Vec<Inst>, Operand);
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Inst {
     Mov(Register, Operand),
     Add(Register, Register, Operand),
     IfJump(Register, Operand),
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Operand {
     Val(Value),
     Reg(Register),
     TApp(Box<Operand>, Type),
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Int(isize),
     Label(usize),
@@ -36,7 +36,7 @@ pub type Heap<T> = HashMap<usize, T>;
 
 pub type Files<T> = HashMap<Register, T>;
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Type {
     Int,
     Code(Files<Type>),
@@ -293,5 +293,25 @@ impl Machine {
 
     fn jump(&self, o: &Operand) -> Option<Seq> {
         self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_eval() {
+        let h = HashMap::new();
+        let f = HashMap::new();
+        let s = Seq(vec![], Operand::Val(Value::Label(0)));
+        let mut m = Machine {
+            heap: h,
+            regs: f,
+            seq: s,
+        };
+        assert!(m.eval().is_none());
+        assert_eq!(m.heap, HashMap::new());
+        assert_eq!(m.regs, HashMap::new());
     }
 }
