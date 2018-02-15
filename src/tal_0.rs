@@ -313,11 +313,15 @@ mod tests {
         }
     }
 
+    fn label(l: usize) -> Operand {
+        Operand::Val(Value::Label(l))
+    }
+
     #[test]
     fn test_eval() {
         let h = map!();
         let f = map!();
-        let s = Seq(vec![], Operand::Val(Value::Label(0)));
+        let s = Seq(vec![], label(0));
         let mut m = Machine {
             heap: h,
             regs: f,
