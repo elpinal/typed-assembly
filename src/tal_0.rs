@@ -264,7 +264,7 @@ impl Type {
 }
 
 impl Machine {
-    fn eval(&mut self) -> Option<()> {
+    pub fn eval(&mut self) -> Option<()> {
         let v = mem::replace(&mut self.seq.0, vec![]);
         for x in v.into_iter() {
             use self::Inst::*;
