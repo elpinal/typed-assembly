@@ -281,15 +281,13 @@ impl Machine {
                 IfJump(r, o) => {
                     let n = self.regs.get(&r)?.int()?;
                     if n == 0 {
-                        self.seq = self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()?;
+                        self.seq = self.jump(&o)?;
                         return self.eval();
                     }
                 }
             }
         }
-        self.seq = self.heap
-            .get(&self.seq.1.get_from(&self.regs)?.label()?)
-            .cloned()?;
+        self.seq = self.jump(&self.seq.1)?;
         self.eval()
     }
 
