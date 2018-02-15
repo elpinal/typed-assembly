@@ -8,6 +8,7 @@ pub enum Inst {
     IfJump(Register, Operand),
 }
 
+#[derive(Clone)]
 pub enum Operand {
     Val(Value),
     Reg(Register),
@@ -207,6 +208,14 @@ impl Operand {
         match *self {
             Operand::Val(ref v) => Some(v.clone()),
             _ => None,
+        }
+    }
+
+    fn get_from(self, f: Files<Operand>) -> Option<Operand> {
+        if let Operand::Reg(r) = self {
+            f.get(&r).cloned()
+        } else {
+            Some(self)
         }
     }
 }
