@@ -226,6 +226,14 @@ impl Operand {
             None
         }
     }
+
+    fn label(&self) -> Option<usize> {
+        if let Operand::Val(Value::Label(l)) = *self {
+            Some(l)
+        } else {
+            None
+        }
+    }
 }
 
 impl Type {
