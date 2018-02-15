@@ -213,9 +213,9 @@ impl Operand {
         }
     }
 
-    fn get_from(self, f: &Files<Operand>) -> Option<Operand> {
-        if let Operand::Reg(r) = self {
-            f.get(&r).cloned()
+    fn get_from<'a>(&'a self, f: &'a Files<Operand>) -> Option<&'a Operand> {
+        if let Operand::Reg(ref r) = *self {
+            f.get(r)
         } else {
             Some(self)
         }
@@ -268,14 +268,12 @@ impl Machine {
             use self::Inst::*;
             match x {
                 Mov(r, o) => {
-                    let o = o.get_from(&self.regs)?;
+                    let o = o.get_from(&self.regs)?.clone();
                     self.regs.insert(r, o);
                 }
                 Add(r1, r2, o) => {
-                    let o1 = self.regs.get(&r2)?;
-                    let o2 = o.get_from(&self.regs)?;
-                    let n1 = o1.int()?;
-                    let n2 = o2.int()?;
+                    let n1 = self.regs.get(&r2)?.int()?;
+                    let n2 = o.get_from(&self.regs)?.int()?;
                     self.regs.insert(r1, Operand::Val(Value::Int(n1 + n2)));
                 }
                 IfJump(r, o) => {
