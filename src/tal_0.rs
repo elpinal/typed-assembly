@@ -213,7 +213,7 @@ impl Operand {
         }
     }
 
-    fn get_from(self, f: Files<Operand>) -> Option<Operand> {
+    fn get_from(self, f: &Files<Operand>) -> Option<Operand> {
         if let Operand::Reg(r) = self {
             f.get(&r).cloned()
         } else {
@@ -268,12 +268,12 @@ impl Machine {
             use self::Inst::*;
             match x {
                 Mov(r, o) => {
-                    let o = o.get_from(self.regs)?;
+                    let o = o.get_from(&self.regs)?;
                     self.regs.insert(r, o);
                 }
                 Add(r1, r2, o) => {
                     let o1 = self.regs.get(&r2)?;
-                    let o2 = o.get_from(self.regs)?;
+                    let o2 = o.get_from(&self.regs)?;
                     let n1 = o1.int()?;
                     let n2 = o2.int()?;
                     self.regs.insert(r1, Operand::Val(Value::Int(n1 + n2)));
@@ -281,13 +281,13 @@ impl Machine {
                 IfJump(r, o) => {
                     let n = self.regs.get(&r)?.int()?;
                     if n == 0 {
-                        self.seq = self.heap.get(&o.get_from(self.regs)?.label()?).cloned()?
+                        self.seq = self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()?
                     }
                 }
             }
         }
         self.seq = self.heap
-            .get(&self.seq.1.get_from(self.regs)?.label()?)
+            .get(&self.seq.1.get_from(&self.regs)?.label()?)
             .cloned()?;
         self.eval()
     }
