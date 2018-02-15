@@ -292,4 +292,8 @@ impl Machine {
             .cloned()?;
         self.eval()
     }
+
+    fn jump(&self, o: &Operand) -> Option<Seq> {
+        self.heap.get(&o.get_from(&self.regs)?.label()?).cloned()
+    }
 }
