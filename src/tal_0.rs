@@ -218,6 +218,14 @@ impl Operand {
             Some(self)
         }
     }
+
+    fn int(&self) -> Option<isize> {
+        if let Operand::Val(Value::Int(n)) = *self {
+            Some(n)
+        } else {
+            None
+        }
+    }
 }
 
 impl Type {
