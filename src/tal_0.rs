@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub struct Seq(Vec<Inst>, Operand);
 
+#[derive(Clone)]
 pub enum Inst {
     Mov(Register, Operand),
     Add(Register, Register, Operand),
@@ -257,5 +259,36 @@ impl Type {
             Code(ref f) => f.values().all(|t| t.no_ftv_ctx(l)),
             Int => true,
         }
+    }
+}
+
+impl Machine {
+    fn eval(&mut self) -> Option<()> {
+        for x in self.seq.0.into_iter() {
+            use self::Inst::*;
+            match x {
+                Mov(r, o) => {
+                    let o = o.get_from(self.regs)?;
+                    self.regs.insert(r, o);
+                }
+                Add(r1, r2, o) => {
+                    let o1 = self.regs.get(&r2)?;
+                    let o2 = o.get_from(self.regs)?;
+                    let n1 = o1.int()?;
+                    let n2 = o2.int()?;
+                    self.regs.insert(r1, Operand::Val(Value::Int(n1 + n2)));
+                }
+                IfJump(r, o) => {
+                    let n = self.regs.get(&r)?.int()?;
+                    if n == 0 {
+                        self.seq = self.heap.get(&o.get_from(self.regs)?.label()?).cloned()?
+                    }
+                }
+            }
+        }
+        self.seq = self.heap
+            .get(&self.seq.1.get_from(self.regs)?.label()?)
+            .cloned()?;
+        self.eval()
     }
 }
