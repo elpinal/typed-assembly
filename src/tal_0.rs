@@ -319,16 +319,25 @@ mod tests {
 
     #[test]
     fn test_eval() {
-        let h = map!();
-        let f = map!();
         let s = Seq(vec![], label(0));
         let mut m = Machine {
-            heap: h,
-            regs: f,
+            heap: map!(),
+            regs: map!(),
             seq: s,
         };
         assert!(m.eval().is_none());
-        assert_eq!(m.heap, HashMap::new());
-        assert_eq!(m.regs, HashMap::new());
+        assert_eq!(m.heap, map!());
+        assert_eq!(m.regs, map!());
+
+        let h = map!(0, Seq(vec![], label(1)));
+        let s = Seq(vec![], label(0));
+        let mut m = Machine {
+            heap: h.clone(),
+            regs: map!(),
+            seq: s,
+        };
+        assert!(m.eval().is_none());
+        assert_eq!(m.heap, h);
+        assert_eq!(m.regs, map!());
     }
 }
