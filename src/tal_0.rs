@@ -300,6 +300,18 @@ impl Machine {
 mod tests {
     use super::*;
 
+    macro_rules! heaps {
+        ( $($x:expr, $y:expr),* ) => {
+            {
+                let mut h = HashMap::new();
+                $(
+                    h.insert($x, $y);
+                ),*
+                h
+            }
+        }
+    }
+
     #[test]
     fn test_eval() {
         let h = HashMap::new();
