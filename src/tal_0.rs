@@ -174,11 +174,14 @@ impl<'a> TypeCheck for &'a Heap<Seq> {
 
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         for (l, s) in self.iter() {
-            let ty = s.type_of((h, f))?;
-            if &ty != h.get(l)? {
+            let ty1 = s.type_of((h, f))?;
+            let ty2 = h.get(l)?;
+            if &ty1 != ty2 {
                 return None;
             }
-            //TODO: check ftv.
+            if !ty2.no_ftv() {
+                return None;
+            }
         }
         Some(())
     }
