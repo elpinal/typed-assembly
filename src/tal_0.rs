@@ -215,4 +215,18 @@ impl Type {
             None
         }
     }
+
+    fn no_ftv(&self) -> bool {
+        self.no_ftv_ctx(0)
+    }
+
+    fn no_ftv_ctx(&self, l: usize) -> bool {
+        use self::Type::*;
+        match *self {
+            Abs(ref t) => t.no_ftv_ctx(l + 1),
+            Var(n) => n < l,
+            Code(ref f) => f.values().all(|t| t.no_ftv_ctx(l)),
+            Int => true,
+        }
+    }
 }
