@@ -301,6 +301,7 @@ mod tests {
     use super::*;
 
     macro_rules! heaps {
+        () => (HashMap::new());
         ( $($x:expr, $y:expr),* ) => {
             {
                 let mut h = HashMap::new();
@@ -314,7 +315,7 @@ mod tests {
 
     #[test]
     fn test_eval() {
-        let h = HashMap::new();
+        let h = heaps!();
         let f = HashMap::new();
         let s = Seq(vec![], Operand::Val(Value::Label(0)));
         let mut m = Machine {
