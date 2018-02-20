@@ -71,17 +71,15 @@ impl<'a> TypeCheck for &'a Operand {
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         use self::Operand::*;
         match *self {
-            Unique(ref hv) => {
-                match **hv {
-                    HeapValue::Tuple(ref os) => {
-                        let mut v: Vec<AllocatedType> = vec![];
-                        for o in os {
-                            v.push(AllocatedType::Value(o.type_of((h, f))));
-                        }
-                        OperandType::Unique(v)
+            Unique(ref hv) => match **hv {
+                HeapValue::Tuple(ref os) => {
+                    let mut v: Vec<AllocatedType> = vec![];
+                    for o in os {
+                        v.push(AllocatedType::Value(o.type_of((h, f))));
                     }
+                    OperandType::Unique(v)
                 }
-            }
+            },
         }
     }
 }
