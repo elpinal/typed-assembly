@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 enum Register {
     /// A general purpose register.
     General(usize),
@@ -40,3 +42,5 @@ enum Inst {
     /// Shrinks a stack by `n` words.
     Sfree(usize),
 }
+
+pub type Files<T> = HashMap<Register, T>;
