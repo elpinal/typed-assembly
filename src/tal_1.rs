@@ -101,7 +101,9 @@ impl<'a> TypeCheck for &'a Inst {
                 Some(())
             }
             IfJump(ref r, ref o) => {
-                if Operand::Reg(r.clone()).type_of((h, f))? == Int && &o.type_of((h, f))?.code()? == f {
+                if Operand::Reg(r.clone()).type_of((h, f))? == Int
+                    && &o.type_of((h, f))?.code()? == f
+                {
                     Some(())
                 } else {
                     None
