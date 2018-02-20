@@ -71,6 +71,46 @@ enum AllocatedType {
     Var(usize),
 }
 
+impl<'a> TypeCheck for &'a Inst {
+    type Input = (&'a Heap<AllocatedType>, &'a mut Files<OperandType>);
+    type Output = Option<()>;
+
+    fn type_of(self, (h, f): Self::Input) -> Self::Output {
+        use self::Inst::*;
+        use self::OperandType::*;
+        match *self {
+            Mov(ref r, ref o) => {
+                let ty = o.type_of((h, f))?;
+                f.insert(r.clone(), ty);
+                Some(())
+            }
+            Add(ref r1, ref r2, ref o) => {
+                {
+                    let want_int = |op: &Operand| {
+                        let ty = op.type_of((h, f))?;
+                        if ty != Int {
+                            None
+                        } else {
+                            Some(())
+                        }
+                    };
+                    want_int(&Operand::Reg(r2.clone()))?;
+                    want_int(o)?;
+                }
+                f.insert(r1.clone(), Int);
+                Some(())
+            }
+            IfJump(ref r, ref o) => {
+                if Operand::Reg(r.clone()).type_of((h, f))? == Int && &o.type_of((h, f))?.code()? == f {
+                    Some(())
+                } else {
+                    None
+                }
+            }
+        }
+    }
+}
+
 impl<'a> TypeCheck for &'a Operand {
     type Input = (&'a Heap<AllocatedType>, &'a Files<OperandType>);
     type Output = Option<OperandType>;
