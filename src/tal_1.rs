@@ -26,7 +26,7 @@ enum Inst {
     IfJump(Register, Operand),
     Load(Register, Register, usize),
     Store(Register, usize, Register),
-    Malloc(usize),
+    Malloc(Register, usize),
     Commit(Register),
     Salloc(usize),
     Sfree(usize),
