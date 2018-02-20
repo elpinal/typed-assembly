@@ -64,7 +64,6 @@ impl<'a> TypeCheck for &'a Value {
     }
 }
 
-
 impl<'a> TypeCheck for &'a Operand {
     type Input = (&'a Heap<Type>, &'a Files<Type>);
     type Output = Option<Type>;
@@ -74,24 +73,24 @@ impl<'a> TypeCheck for &'a Operand {
         match *self {
             Val(ref v) => v.type_of(h),
             Reg(r) => f.get(&r).cloned(),
-            TApp(ref o, ref ty) => {
-                match o.type_of((h, f))? {
-                    Type::Abs(ty1) => Some(ty1.subst_top(ty)),
-                    _ => None,
-                }
-            }
+            TApp(ref o, ref ty) => match o.type_of((h, f))? {
+                Type::Abs(ty1) => Some(ty1.subst_top(ty)),
+                _ => None,
+            },
         }
     }
 }
 
 impl Type {
     fn subst_top(self, t: &Type) -> Self {
-        let f = |n, c| if n == c {
-            t.clone()
-        } else if n > c {
-            Type::Var(n - 1)
-        } else {
-            Type::Var(n)
+        let f = |n, c| {
+            if n == c {
+                t.clone()
+            } else if n > c {
+                Type::Var(n - 1)
+            } else {
+                Type::Var(n)
+            }
         };
         self.map(&f, 0)
     }
@@ -126,7 +125,11 @@ impl<'a> TypeCheck for &'a Inst {
                 {
                     let want_int = |op: &Operand| {
                         let ty = op.type_of((h, f))?;
-                        if ty != Int { None } else { Some(()) }
+                        if ty != Int {
+                            None
+                        } else {
+                            Some(())
+                        }
                     };
                     want_int(&Operand::Reg(r2))?;
                     want_int(o)?;
@@ -155,7 +158,11 @@ impl<'a> TypeCheck for &'a Seq {
             inst.type_of((h, f))?;
         }
         let f0 = self.1.type_of((h, f))?.code()?;
-        if f != &f0 { None } else { Some(Type::Code(f0)) }
+        if f != &f0 {
+            None
+        } else {
+            Some(Type::Code(f0))
+        }
     }
 }
 
@@ -204,7 +211,6 @@ impl<'a> TypeCheck for &'a Machine {
         }
     }
 }
-
 
 impl Operand {
     fn value(&self) -> Option<Value> {
