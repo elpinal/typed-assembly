@@ -44,3 +44,18 @@ enum Inst {
 }
 
 pub type Files<T> = HashMap<Register, T>;
+
+enum OperandType {
+    Int,
+    Code(Files<OperandType>),
+    Var(usize),
+    Forall(Box<OperandType>),
+    Pointer(Vec<AllocatedType>),
+    Unique(Vec<AllocatedType>),
+    ForallAllocated(Box<OperandType>),
+}
+
+enum AllocatedType {
+    Value(OperandType),
+    Var(usize),
+}
