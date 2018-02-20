@@ -43,7 +43,9 @@ enum Inst {
     Sfree(usize),
 }
 
-pub type Files<T> = HashMap<Register, T>;
+type Heap<T> = HashMap<usize, T>;
+
+type Files<T> = HashMap<Register, T>;
 
 enum OperandType {
     Int,
