@@ -2,12 +2,14 @@ use TypeCheck;
 
 use std::collections::HashMap;
 
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 enum Register {
     /// A general purpose register.
     General(usize),
     StackPointer,
 }
 
+#[derive(Clone, Debug, PartialEq)]
 enum Operand {
     Reg(Register),
     Int(isize),
@@ -17,13 +19,16 @@ enum Operand {
     Unique(Box<HeapValue>),
 }
 
+#[derive(Clone, Debug, PartialEq)]
 enum HeapValue {
     Seq(Seq),
     Tuple(Vec<Operand>),
 }
 
+#[derive(Clone, Debug, PartialEq)]
 struct Seq(Vec<Inst>, Operand);
 
+#[derive(Clone, Debug, PartialEq)]
 enum Inst {
     Mov(Register, Operand),
     Add(Register, Register, Operand),
@@ -49,6 +54,7 @@ type Heap<T> = HashMap<usize, T>;
 
 type Files<T> = HashMap<Register, T>;
 
+#[derive(Clone, Debug, PartialEq)]
 enum OperandType {
     Int,
     Code(Files<OperandType>),
@@ -59,27 +65,60 @@ enum OperandType {
     ForallAllocated(Box<OperandType>),
 }
 
+#[derive(Clone, Debug, PartialEq)]
 enum AllocatedType {
     Value(OperandType),
     Var(usize),
 }
 
 impl<'a> TypeCheck for &'a Operand {
-    type Input = (Heap<AllocatedType>, Files<OperandType>);
-    type Output = OperandType;
+    type Input = (&'a Heap<AllocatedType>, &'a Files<OperandType>);
+    type Output = Option<OperandType>;
 
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         use self::Operand::*;
         match *self {
-            Unique(ref hv) => match **hv {
-                HeapValue::Tuple(ref os) => {
-                    let mut v: Vec<AllocatedType> = vec![];
-                    for o in os {
-                        v.push(AllocatedType::Value(o.type_of((h, f))));
-                    }
-                    OperandType::Unique(v)
+            Unique(ref hv) => hv.type_of((h, f)),
+        }
+    }
+}
+
+impl<'a> TypeCheck for &'a HeapValue {
+    type Input = (&'a Heap<AllocatedType>, &'a Files<OperandType>);
+    type Output = Option<OperandType>;
+
+    fn type_of(self, (h, f): Self::Input) -> Self::Output {
+        use self::HeapValue::*;
+        match *self {
+            Tuple(ref os) => {
+                let mut v: Vec<AllocatedType> = vec![];
+                for o in os {
+                    v.push(AllocatedType::Value(o.type_of((h, f))?));
                 }
-            },
+                Some(OperandType::Unique(v))
+            }
+            Seq(ref s) => {
+                let f = &mut f.clone();
+                for inst in &s.0 {
+                    inst.type_of((h, f))?;
+                }
+                let f0 = s.1.type_of((h, f))?.code()?;
+                if f != &f0 {
+                    None
+                } else {
+                    Some(OperandType::Code(f0))
+                }
+            }
+        }
+    }
+}
+
+impl OperandType {
+    fn code(self) -> Option<Files<OperandType>> {
+        if let OperandType::Code(f) = self {
+            Some(f)
+        } else {
+            None
         }
     }
 }
