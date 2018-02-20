@@ -1,3 +1,5 @@
+use TypeCheck;
+
 use std::collections::HashMap;
 use std::mem;
 
@@ -42,13 +44,6 @@ pub enum Type {
     Code(Files<Type>),
     Var(usize),
     Abs(Box<Type>),
-}
-
-pub trait TypeCheck {
-    type Input;
-    type Output;
-
-    fn type_of(self, input: Self::Input) -> Self::Output;
 }
 
 impl<'a> TypeCheck for &'a Value {
