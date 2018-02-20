@@ -12,10 +12,10 @@ enum Operand {
     /// A code or shared data pointer.
     Label(usize),
     /// An unique data pointer.
-    Unique(Box<Heap>),
+    Unique(Box<HeapValue>),
 }
 
-enum Heap {
+enum HeapValue {
     Seq(Seq),
     Tuple(Vec<Operand>),
 }
