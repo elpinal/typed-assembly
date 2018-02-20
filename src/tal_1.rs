@@ -120,14 +120,14 @@ impl<'a> TypeCheck for &'a Operand {
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         use self::Operand::*;
         match *self {
-            Unique(ref hv) => hv.type_of((h, f)),
+            Unique(ref hv) => hv.type_of((h, f)).map(|ats| OperandType::Unique(ats)),
         }
     }
 }
 
 impl<'a> TypeCheck for &'a HeapValue {
     type Input = (&'a Heap<AllocatedType>, &'a Files<OperandType>);
-    type Output = Option<OperandType>;
+    type Output = Option<Vec<AllocatedType>>;
 
     fn type_of(self, (h, f): Self::Input) -> Self::Output {
         use self::HeapValue::*;
@@ -137,7 +137,7 @@ impl<'a> TypeCheck for &'a HeapValue {
                 for o in os {
                     v.push(AllocatedType::Value(o.type_of((h, f))?));
                 }
-                Some(OperandType::Unique(v))
+                Some(v)
             }
             Seq(ref s) => {
                 let f = &mut f.clone();
@@ -148,7 +148,7 @@ impl<'a> TypeCheck for &'a HeapValue {
                 if f != &f0 {
                     None
                 } else {
-                    Some(OperandType::Code(f0))
+                    Some(vec![AllocatedType::Value(OperandType::Code(f0))])
                 }
             }
         }
