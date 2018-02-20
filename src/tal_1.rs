@@ -1,3 +1,5 @@
+use TypeCheck;
+
 use std::collections::HashMap;
 
 enum Register {
@@ -60,4 +62,26 @@ enum OperandType {
 enum AllocatedType {
     Value(OperandType),
     Var(usize),
+}
+
+impl<'a> TypeCheck for &'a Operand {
+    type Input = (Heap<AllocatedType>, Files<OperandType>);
+    type Output = OperandType;
+
+    fn type_of(self, (h, f): Self::Input) -> Self::Output {
+        use self::Operand::*;
+        match *self {
+            Unique(ref hv) => {
+                match **hv {
+                    HeapValue::Tuple(ref os) => {
+                        let mut v: Vec<AllocatedType> = vec![];
+                        for o in os {
+                            v.push(AllocatedType::Value(o.type_of((h, f))));
+                        }
+                        OperandType::Unique(v)
+                    }
+                }
+            }
+        }
+    }
 }
