@@ -24,10 +24,19 @@ enum Inst {
     Mov(Register, Operand),
     Add(Register, Register, Operand),
     IfJump(Register, Operand),
+    /// Loads a value from memory into a register.
+    /// The address is calculated as a word-level offset from a base register.
     Load(Register, Register, usize),
+    /// Stores a register's value to memory.
+    /// The address is calculated as a word-level offset from a base register.
     Store(Register, usize, Register),
+    /// `Malloc(r, n)` allocates an object with `n` words.
+    /// A destination register `r` will hold a unique reference to the object.
     Malloc(Register, usize),
+    /// Coerces a unique pointer to a shared pointer.
     Commit(Register),
+    /// Grows a stack by `n` words.
     Salloc(usize),
+    /// Shrinks a stack by `n` words.
     Sfree(usize),
 }
