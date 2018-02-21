@@ -32,7 +32,7 @@ type Heap = Map.Map Label HeapValue
 data Machine = Machine
   { heap :: Heap
   , file :: File
-  , seq :: Seq
+  , current :: Seq
   }
 
 fetch :: Operand -> File -> Maybe Operand
@@ -43,7 +43,7 @@ eval1 :: Machine -> Maybe Machine
 eval1 m @ Machine
   { heap = h
   , file = f
-  , seq = Seq [] o
+  , current = Seq [] o
   } = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
     where
-      update s = m { seq = s }
+      update s = m { current = s }
