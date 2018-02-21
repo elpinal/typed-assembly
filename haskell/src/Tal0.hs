@@ -4,9 +4,11 @@ import qualified Data.Map.Lazy as Map
 
 newtype Register = Register Int
 
+type Label = Int
+
 data Operand
   = Int Int
-  | Label Int
+  | Label Label
   | Reg Register
 
 data Inst
@@ -18,4 +20,4 @@ data Seq = Seq [Inst] Operand
 
 type File = Map.Map Register Operand
 
-type Heap = Map.Map Int Seq
+type Heap = Map.Map Label Seq
