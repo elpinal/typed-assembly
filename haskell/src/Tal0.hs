@@ -12,6 +12,10 @@ data Operand
   | Label Label
   | Reg Register
 
+fromLabel :: Operand -> Maybe Label
+fromLabel (Label l) = return l
+fromLabel _ = Nothing
+
 data Inst
   = Mov Register Operand
   | Add { dest :: Register, src :: Register, offset :: Operand }
