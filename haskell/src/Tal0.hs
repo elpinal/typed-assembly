@@ -68,3 +68,14 @@ eval1 m @ Machine
     return . update . Int $ n1 + n2
   where
     update o = m { file = Map.insert rd o f, current = Seq is o0 }
+eval1 m @ Machine
+  { heap = h
+  , file = f
+  , current = Seq (IfJump r o : is) o0
+  } = do
+    n <- Map.lookup r f >>= fromInt
+    if n == 0
+      then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+      else return . update $ Seq is o0
+  where
+    update s = m { current = s }
