@@ -23,3 +23,9 @@ type File = Map.Map Register Operand
 type HeapValue = Seq
 
 type Heap = Map.Map Label HeapValue
+
+data Machine = Machine
+  { heap :: Heap
+  , file :: File
+  , seq :: Seq
+  }
