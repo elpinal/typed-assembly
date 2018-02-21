@@ -3,6 +3,7 @@ module Tal0 where
 import qualified Data.Map.Lazy as Map
 
 newtype Register = Register Int
+  deriving (Eq, Ord)
 
 type Label = Int
 
@@ -29,3 +30,7 @@ data Machine = Machine
   , file :: File
   , seq :: Seq
   }
+
+fetch :: Operand -> File -> Maybe Operand
+fetch (Reg r) f = Map.lookup r f
+fetch o _ = return o
