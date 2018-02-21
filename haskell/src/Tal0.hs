@@ -11,3 +11,5 @@ data Inst
   = Mov Register Operand
   | Add { dest :: Register, src :: Register, offset :: Operand }
   | IfJump Register Operand
+
+data Seq = Seq [Inst] Operand
