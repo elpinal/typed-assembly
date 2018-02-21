@@ -20,4 +20,6 @@ data Seq = Seq [Inst] Operand
 
 type File = Map.Map Register Operand
 
-type Heap = Map.Map Label Seq
+type HeapValue = Seq
+
+type Heap = Map.Map Label HeapValue
