@@ -1,5 +1,7 @@
 module Tal0 where
 
+import qualified Data.Map.Lazy as Map
+
 newtype Register = Register Int
 
 data Operand
@@ -13,3 +15,5 @@ data Inst
   | IfJump Register Operand
 
 data Seq = Seq [Inst] Operand
+
+type File = Map.Map Register Operand
