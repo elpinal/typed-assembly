@@ -17,3 +17,5 @@ data Inst
 data Seq = Seq [Inst] Operand
 
 type File = Map.Map Register Operand
+
+type Heap = Map.Map Int Seq
