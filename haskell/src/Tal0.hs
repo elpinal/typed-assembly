@@ -16,6 +16,10 @@ fromLabel :: Operand -> Maybe Label
 fromLabel (Label l) = return l
 fromLabel _ = Nothing
 
+fromInt :: Operand -> Maybe Int
+fromInt (Int n) = return n
+fromInt _ = Nothing
+
 data Inst
   = Mov Register Operand
   | Add { dest :: Register, src :: Register, offset :: Operand }
@@ -54,3 +58,13 @@ eval1 m @ Machine
   } = fmap update $ fetch o f
   where
     update o = m { file = Map.insert r o f, current = Seq is o0 }
+eval1 m @ Machine
+  { heap = h
+  , file = f
+  , current = Seq (Add rd rs o : is) o0
+  } = do
+    n1 <- Map.lookup rs f >>= fromInt
+    n2 <- fetch o f >>= fromInt
+    return . update . Int $ n1 + n2
+  where
+    update o = m { file = Map.insert rd o f, current = Seq is o0 }
