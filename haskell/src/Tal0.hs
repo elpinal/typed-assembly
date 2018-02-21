@@ -6,3 +6,8 @@ data Operand
   = Int Int
   | Label Int
   | Reg Register
+
+data Inst
+  = Mov Register Operand
+  | Add { dest :: Register, src :: Register, offset :: Operand }
+  | IfJump Register Operand
