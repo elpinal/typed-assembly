@@ -38,3 +38,12 @@ data Machine = Machine
 fetch :: Operand -> File -> Maybe Operand
 fetch (Reg r) f = Map.lookup r f
 fetch o _ = return o
+
+eval1 :: Machine -> Maybe Machine
+eval1 m @ Machine
+  { heap = h
+  , file = f
+  , seq = Seq [] o
+  } = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+    where
+      update s = m { seq = s }
