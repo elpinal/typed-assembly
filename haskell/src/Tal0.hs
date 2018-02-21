@@ -45,5 +45,12 @@ eval1 m @ Machine
   , file = f
   , current = Seq [] o
   } = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
-    where
-      update s = m { current = s }
+  where
+    update s = m { current = s }
+eval1 m @ Machine
+  { heap = h
+  , file = f
+  , current = Seq (Mov r o : is) o0
+  } = fmap update $ fetch o f
+  where
+    update o = m { file = Map.insert r o f, current = Seq is o0 }
