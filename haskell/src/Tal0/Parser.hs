@@ -3,6 +3,7 @@ module Tal0.Parser
 
 import Text.Parsec
 import Text.Parsec.Language
+import Text.Parsec.String
 import Text.Parsec.Token
 
 data Token
@@ -16,3 +17,6 @@ def = emptyDef
 
 lexer :: TokenParser st
 lexer = makeTokenParser def
+
+jump :: Parser ()
+jump = reserved lexer "jump"
