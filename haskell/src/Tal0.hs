@@ -53,6 +53,7 @@ data Machine = Machine
   }
   deriving (Eq, Show)
 
+-- | A function to create an empty machine whose current instruction is a given 'Operand'.
 emptyMachine :: Operand -> Machine
 emptyMachine o = Machine
   { heap = mempty
