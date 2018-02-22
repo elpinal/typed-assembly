@@ -48,10 +48,10 @@ eval1 :: Machine -> Maybe Machine
 eval1 m @ Machine
   { heap = h
   , file = f
-  , current = s
-  } = case s of
-  Seq [] o        -> jumpTo o
-  Seq (i : is) o0 -> let rest = Seq is o0 in case i of
+  , current = Seq is o
+  } = case is of
+  []     -> jumpTo o
+  i : is -> let rest = Seq is o in case i of
     Mov r o     -> updateReg r rest <$> fetch o f
     Add rd rs o -> fmap (updateReg rd rest) . join $ addOperand <$> Map.lookup rs f <*> fetch o f
     IfJump r o  -> do
