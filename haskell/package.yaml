@@ -47,5 +47,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - typed-assembly
-    - hspec
-    - HUnit
+    - hspec >= 2.4.4
+    - HUnit >= 1.6.0.0
