@@ -44,24 +44,22 @@ fetch (Reg r) f = Map.lookup r f
 fetch o _ = return o
 
 eval1 :: Machine -> Maybe Machine
-eval1 Machine
+eval1 m @ Machine
   { heap = h
   , file = f
   , current = s
   } = case s of
   (Seq [] o)                  -> fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
-  (Seq (Mov r o : is) o0)     -> (alterReg r h f $ Seq is o0) <$> fetch o f
+  (Seq (Mov r o : is) o0)     -> (updateReg r $ Seq is o0) <$> fetch o f
   (Seq (Add rd rs o : is) o0) -> do
     n1 <- Map.lookup rs f >>= fromInt
     n2 <- fetch o f >>= fromInt
-    return . (alterReg rd h f $ Seq is o0) . Int $ n1 + n2
+    return . (updateReg rd $ Seq is o0) . Int $ n1 + n2
   (Seq (IfJump r o : is) o0)  -> do
     n <- Map.lookup r f >>= fromInt
     if n == 0
       then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
       else return . update $ Seq is o0
   where
-    update = Machine h f
-
-alterReg :: Register -> Heap -> File -> Seq -> Operand -> Machine
-alterReg r h f s o = Machine h (Map.insert r o f) s
+    update s = m { current = s }
+    updateReg r s o = m { file = Map.insert r o f, current = s }
