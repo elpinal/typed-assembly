@@ -49,13 +49,13 @@ eval1 m @ Machine
   , file = f
   , current = s
   } = case s of
-  (Seq [] o)                  -> fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
-  (Seq (Mov r o : is) o0)     -> (updateReg r $ Seq is o0) <$> fetch o f
-  (Seq (Add rd rs o : is) o0) -> do
+  Seq [] o                  -> fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+  Seq (Mov r o : is) o0     -> (updateReg r $ Seq is o0) <$> fetch o f
+  Seq (Add rd rs o : is) o0 -> do
     n1 <- Map.lookup rs f >>= fromInt
     n2 <- fetch o f >>= fromInt
     return . (updateReg rd $ Seq is o0) . Int $ n1 + n2
-  (Seq (IfJump r o : is) o0)  -> do
+  Seq (IfJump r o : is) o0  -> do
     n <- Map.lookup r f >>= fromInt
     if n == 0
       then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
