@@ -1,5 +1,6 @@
 module Tal0
   ( Machine(..)
+  , emptyMachine
   , eval1
   , Seq(..)
   , Operand(..)
@@ -49,6 +50,13 @@ data Machine = Machine
   , current :: Seq
   }
   deriving (Eq, Show)
+
+emptyMachine :: Operand -> Machine
+emptyMachine o = Machine
+  { heap = mempty
+  , file = mempty
+  , current = Seq [] o
+  }
 
 data EvalError
   = NotInt Operand
