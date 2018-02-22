@@ -48,22 +48,18 @@ eval1 Machine
   { heap = h
   , file = f
   , current = s
-  } = eval1' h f s
-
-eval1' :: Heap -> File -> Seq -> Maybe Machine
-eval1' h f (Seq [] o) = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
-  where
-    update = Machine h f
-eval1' h f (Seq (Mov r o : is) o0) = fmap (alterReg r h f $ Seq is o0) $ fetch o f
-eval1' h f (Seq (Add rd rs o : is) o0) = do
-  n1 <- Map.lookup rs f >>= fromInt
-  n2 <- fetch o f >>= fromInt
-  return . (alterReg rd h f $ Seq is o0) . Int $ n1 + n2
-eval1' h f (Seq (IfJump r o : is) o0) = do
-  n <- Map.lookup r f >>= fromInt
-  if n == 0
-    then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
-    else return . update $ Seq is o0
+  } = case s of
+  (Seq [] o)                  -> fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+  (Seq (Mov r o : is) o0)     -> (alterReg r h f $ Seq is o0) <$> fetch o f
+  (Seq (Add rd rs o : is) o0) -> do
+    n1 <- Map.lookup rs f >>= fromInt
+    n2 <- fetch o f >>= fromInt
+    return . (alterReg rd h f $ Seq is o0) . Int $ n1 + n2
+  (Seq (IfJump r o : is) o0)  -> do
+    n <- Map.lookup r f >>= fromInt
+    if n == 0
+      then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+      else return . update $ Seq is o0
   where
     update = Machine h f
 
