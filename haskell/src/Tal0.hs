@@ -71,6 +71,9 @@ fetch :: Operand -> File -> Either EvalError Operand
 fetch (Reg r) f = register f r
 fetch o _ = return o
 
+-- |
+-- Evaluates a machine. It consumes the current instruction and updates the
+-- machine state as the instruction means.
 eval1 :: Machine -> Either EvalError Machine
 eval1 m @ Machine
   { heap = h
