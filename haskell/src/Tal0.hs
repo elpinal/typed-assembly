@@ -1,5 +1,6 @@
 module Tal0 where
 
+import Control.Monad
 import qualified Data.Map.Lazy as Map
 
 newtype Register = Register Int
@@ -52,10 +53,7 @@ eval1 m @ Machine
   Seq [] o        -> jumpTo o
   Seq (i : is) o0 -> let rest = Seq is o0 in case i of
     Mov r o     -> updateReg r rest <$> fetch o f
-    Add rd rs o -> do
-      n1 <- Map.lookup rs f >>= fromInt
-      n2 <- fetch o f >>= fromInt
-      return . updateReg rd rest . Int $ n1 + n2
+    Add rd rs o -> fmap (updateReg rd rest) . join $ addOperand <$> Map.lookup rs f <*> fetch o f
     IfJump r o  -> do
       n <- Map.lookup r f >>= fromInt
       if n == 0
@@ -65,3 +63,6 @@ eval1 m @ Machine
     update s = m { current = s }
     updateReg r s o = m { file = Map.insert r o f, current = s }
     jumpTo o = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+
+addOperand :: Operand -> Operand -> Maybe Operand
+addOperand o1 o2 = fmap Int $ (+) <$> fromInt o1 <*> fromInt o2
