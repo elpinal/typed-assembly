@@ -1,4 +1,10 @@
-module Tal0 where
+module Tal0
+  ( Machine(..)
+  , eval1
+  , Seq(..)
+  , Operand(..)
+  , EvalError(..)
+  ) where
 
 import Control.Monad
 import qualified Data.Map.Lazy as Map
