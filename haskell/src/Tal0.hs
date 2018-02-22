@@ -4,7 +4,7 @@ import Control.Monad
 import qualified Data.Map.Lazy as Map
 
 newtype Register = Register Int
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 type Label = Int
 
@@ -12,6 +12,7 @@ data Operand
   = Int Int
   | Label Label
   | Reg Register
+  deriving (Eq, Show)
 
 fromLabel :: Operand -> Either EvalError Label
 fromLabel (Label l) = return l
@@ -25,8 +26,10 @@ data Inst
   = Mov Register Operand
   | Add { dest :: Register, src :: Register, offset :: Operand }
   | IfJump Register Operand
+  deriving (Eq, Show)
 
 data Seq = Seq [Inst] Operand
+  deriving (Eq, Show)
 
 type File = Map.Map Register Operand
 
@@ -39,12 +42,14 @@ data Machine = Machine
   , file :: File
   , current :: Seq
   }
+  deriving (Eq, Show)
 
 data EvalError
   = NotInt Operand
   | NotLabel Operand
   | NoRegister Register
   | NoLabel Label
+  deriving (Eq, Show)
 
 rightOr :: Maybe a -> b -> Either b a
 rightOr Nothing y = Left y
