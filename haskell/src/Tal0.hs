@@ -49,7 +49,7 @@ eval1 m @ Machine
   , file = f
   , current = s
   } = case s of
-  Seq [] o        -> fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+  Seq [] o        -> jumpTo o
   Seq (i : is) o0 -> let rest = Seq is o0 in case i of
     Mov r o     -> updateReg r rest <$> fetch o f
     Add rd rs o -> do
@@ -59,8 +59,9 @@ eval1 m @ Machine
     IfJump r o  -> do
       n <- Map.lookup r f >>= fromInt
       if n == 0
-        then fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
+        then jumpTo o
         else return $ update rest
   where
     update s = m { current = s }
     updateReg r s o = m { file = Map.insert r o f, current = s }
+    jumpTo o = fmap update $ fetch o f >>= fromLabel >>= flip Map.lookup h
