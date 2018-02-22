@@ -3,7 +3,9 @@ module Tal0
   , emptyMachine
   , eval1
   , Seq(..)
+  , Inst(..)
   , Operand(..)
+  , Register(..)
   , EvalError(..)
   ) where
 
