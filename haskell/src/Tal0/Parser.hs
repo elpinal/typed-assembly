@@ -20,3 +20,6 @@ lexer = makeTokenParser def
 
 jump :: Parser ()
 jump = reserved lexer "jump"
+
+ident :: Parser String
+ident = identifier lexer
