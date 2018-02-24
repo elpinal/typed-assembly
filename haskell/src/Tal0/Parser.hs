@@ -27,7 +27,7 @@ ident :: Parser String
 ident = identifier lexer
 
 parseHeap :: String -> Either ParseError Heap
-parseHeap = parse heap "<file name>"
+parseHeap = parse (heap <* eof) "<file name>"
 
 heap :: Parser Heap
 heap = fmap Map.fromList . many $ do
