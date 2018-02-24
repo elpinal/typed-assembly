@@ -1,5 +1,5 @@
 module Tal0.Parser
-  () where
+  (parseHeap) where
 
 import Tal0 hiding (heap)
 
