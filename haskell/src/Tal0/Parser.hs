@@ -38,8 +38,7 @@ heap = fmap Map.fromList . many $ do
 
 seque :: Parser Seq
 seque = do
-  is <- semiSep lexer inst
-  semi lexer
+  is <- try inst `endBy` semi lexer
   o <- lastInst
   return $ Seq is o
 
