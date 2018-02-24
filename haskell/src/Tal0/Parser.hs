@@ -11,10 +11,6 @@ import Text.Parsec.Token
 import Data.Char
 import qualified Data.Map.Lazy as Map
 
-data Token
-  = Ident
-  | Jump
-
 def :: LanguageDef st
 def = emptyDef
   { reservedNames = ["if", "jump"]
