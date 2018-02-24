@@ -1,6 +1,10 @@
 module Main where
 
-import Lib
+import Tal0.Parser
 
 main :: IO ()
-main = someFunc
+main = do
+  line <- getLine
+  case parseHeap line of
+    Right h -> print h
+    Left e -> print e
