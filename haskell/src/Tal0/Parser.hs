@@ -1,7 +1,7 @@
 module Tal0.Parser
   () where
 
-import Tal0
+import Tal0 hiding (heap)
 
 import Text.Parsec hiding (label)
 import Text.Parsec.Language
@@ -25,6 +25,9 @@ jump = reserved lexer "jump"
 
 ident :: Parser String
 ident = identifier lexer
+
+parseHeap :: String -> Either ParseError Heap
+parseHeap = parse heap "<file name>"
 
 heap :: Parser Heap
 heap = fmap Map.fromList . many $ do
