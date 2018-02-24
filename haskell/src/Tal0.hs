@@ -15,7 +15,7 @@ import qualified Data.Map.Lazy as Map
 newtype Register = Register Int
   deriving (Eq, Ord, Show)
 
-type Label = Int
+type Label = String
 
 data Operand
   = Int Int
