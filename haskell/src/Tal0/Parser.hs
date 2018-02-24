@@ -9,6 +9,7 @@ import Text.Parsec.String
 import Text.Parsec.Token
 
 import Data.Char
+import qualified Data.Map.Lazy as Map
 
 data Token
   = Ident
@@ -17,7 +18,7 @@ data Token
 def :: LanguageDef st
 def = emptyDef
   { reservedNames = ["if", "jump"]
-  , reservedOpNames = [":=", "+", ";"]
+  , reservedOpNames = [":=", "+", ";", ":"]
   }
 
 lexer :: TokenParser st
@@ -28,6 +29,20 @@ jump = reserved lexer "jump"
 
 ident :: Parser String
 ident = identifier lexer
+
+heap :: Parser Heap
+heap = fmap Map.fromList . many $ do
+  l <- label
+  colon lexer
+  s <- seque
+  return $ (l, s)
+
+seque :: Parser Seq
+seque = do
+  is <- semiSep lexer inst
+  semi lexer
+  o <- lastInst
+  return $ Seq is o
 
 lastInst :: Parser Operand
 lastInst = jump >> operand

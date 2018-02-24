@@ -1,6 +1,8 @@
 module Tal0
   ( Machine(..)
   , emptyMachine
+  , Heap
+  , File
   , eval1
   , Seq(..)
   , Inst(..)
