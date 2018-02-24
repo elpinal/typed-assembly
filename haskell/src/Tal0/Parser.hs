@@ -31,7 +31,7 @@ parseHeap = parse (heap <* eof) "<file name>"
 
 heap :: Parser Heap
 heap = fmap Map.fromList . many $ do
-  l <- label
+  l <- try label <?> "label"
   colon lexer
   s <- seque
   return $ (l, s)
