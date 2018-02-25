@@ -1,7 +1,7 @@
 module Tal0.Parser
   (parseHeap) where
 
-import Tal0 hiding (heap)
+import Tal0 hiding (heap, file)
 
 import Text.Parsec hiding (label)
 import Text.Parsec.Language
