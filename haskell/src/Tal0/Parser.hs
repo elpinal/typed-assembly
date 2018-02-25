@@ -14,7 +14,7 @@ import qualified Data.Map.Lazy as Map
 def :: LanguageDef st
 def = emptyDef
   { reservedNames = ["if", "jump"]
-  , reservedOpNames = [":=", "+", ";", ":"]
+  , reservedOpNames = [":=", "+", ";", ":", "="]
   }
 
 lexer :: TokenParser st
