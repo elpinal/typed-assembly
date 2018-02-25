@@ -113,3 +113,6 @@ assign = reservedOp lexer ":="
 
 plus :: Parser ()
 plus = reservedOp lexer "+"
+
+eq :: Parser ()
+eq = reservedOp lexer "="
