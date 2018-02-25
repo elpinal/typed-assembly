@@ -7,6 +7,7 @@ import Control.Monad
 
 main :: IO ()
 main = forever $ do
+  putStr "kind: "
   line <- getLine
   if line == "heap"
     then readHeap
