@@ -10,7 +10,7 @@ main = forever $ do
   line <- getLine
   if line == "heap"
     then readHeap
-    else readFile >>= print
+    else getFile >>= print
 
 readHeap :: IO ()
 readHeap = do
@@ -19,5 +19,5 @@ readHeap = do
     Right h -> print h
     Left e -> print e
 
-readFile :: IO (Either ParseError File)
-readFile = parseFile <$> getLine
+getFile :: IO (Either ParseError File)
+getFile = parseFile <$> getLine
