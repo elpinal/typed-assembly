@@ -47,8 +47,8 @@ lastInst = jump >> operand <?> "jump instruction"
 
 inst :: Parser Inst
 inst = choice
-  [ mov
-  , add
+  [ add
+  , mov
   , ifJump
   ] <?> "instruction"
 
