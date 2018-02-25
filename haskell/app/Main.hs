@@ -6,7 +6,11 @@ import Tal0.Parser
 import Control.Monad
 
 main :: IO ()
-main = forever readHeap
+main = forever $ do
+  line <- getLine
+  if line == "heap"
+    then readHeap
+    else readFile >>= print
 
 readHeap :: IO ()
 readHeap = do
