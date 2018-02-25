@@ -12,5 +12,5 @@ main = forever $ do
     Right h -> print h
     Left e -> print e
 
-readFile :: IO File
-readFile = getLine >>= parseFile
+readFile :: IO (Either ParseError File)
+readFile = parseFile <$> getLine
