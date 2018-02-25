@@ -116,3 +116,10 @@ plus = reservedOp lexer "+"
 
 eq :: Parser ()
 eq = reservedOp lexer "="
+
+file :: Parser File
+file = do
+  r <- register
+  eq
+  o <- operand
+  return (r, o)
