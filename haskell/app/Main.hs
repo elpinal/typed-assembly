@@ -6,7 +6,10 @@ import Tal0.Parser
 import Control.Monad
 
 main :: IO ()
-main = forever $ do
+main = forever readHeap
+
+readHeap :: IO ()
+readHeap = do
   line <- getLine
   case parseHeap line of
     Right h -> print h
