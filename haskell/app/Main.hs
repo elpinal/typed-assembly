@@ -1,5 +1,6 @@
 module Main where
 
+import Tal0
 import Tal0.Parser
 
 import Control.Monad
