@@ -118,7 +118,7 @@ eq :: Parser ()
 eq = reservedOp lexer "="
 
 file :: Parser File
-file = do
+file = commaSep lexer $ do
   r <- register
   eq
   o <- operand
