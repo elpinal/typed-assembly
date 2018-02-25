@@ -118,7 +118,7 @@ eq :: Parser ()
 eq = reservedOp lexer "="
 
 file :: Parser File
-file = commaSep lexer $ do
+file = fmap Map.fromList . commaSep lexer $ do
   r <- register
   eq
   o <- operand
