@@ -12,6 +12,4 @@ main = forever $ do
     Left e -> print e
 
 readFile :: IO File
-readFile = do
-  line <- getLine
-  parseFile line
+readFile = getLine >>= parseFile
