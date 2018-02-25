@@ -10,3 +10,8 @@ main = forever $ do
   case parseHeap line of
     Right h -> print h
     Left e -> print e
+
+readFile :: IO File
+readFile = do
+  line <- getLine
+  parseFile line
