@@ -117,6 +117,9 @@ plus = reservedOp lexer "+"
 eq :: Parser ()
 eq = reservedOp lexer "="
 
+parseFile :: String -> Either ParseError File
+parseFile = parse (file <* eof) "<file name>"
+
 file :: Parser File
 file = fmap Map.fromList . braces lexer . commaSep lexer $ do
   r <- register
