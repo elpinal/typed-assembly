@@ -31,7 +31,7 @@ parseHeap = parse (heap <* eof) "<file name>"
 
 heap :: Parser Heap
 heap = fmap Map.fromList . many $ do
-  l <- try label <?> "label"
+  l <- label
   colon lexer
   s <- seque
   return $ (l, s)
@@ -43,24 +43,24 @@ seque = do
   return $ Seq is o
 
 lastInst :: Parser Operand
-lastInst = jump >> operand
+lastInst = jump >> operand <?> "jump instruction"
 
 inst :: Parser Inst
 inst = choice
   [ mov
   , add
   , ifJump
-  ]
+  ] <?> "instruction"
 
 mov :: Parser Inst
-mov = lookAhead $ do
+mov = try $ do
   r <- register
   assign
   o <- operand
   return $ Mov r o
 
 add :: Parser Inst
-add = lookAhead $ do
+add = try $ do
   rd <- register
   assign
   rs <- register
@@ -77,11 +77,13 @@ ifJump = do
   return $ IfJump r o
 
 register :: Parser Register
-register = do
-  s <- ident
-  if isRegister s
-    then return . Register $ read $ drop 1 s -- TODO: subtleness of `read`
-    else unexpected "label"
+register = try r <?> "register"
+  where
+    r = do
+      s <- ident
+      if isRegister s
+        then return . Register $ read $ drop 1 s -- TODO: subtleness of `read`
+        else unexpected "label"
 
 isRegister :: String -> Bool
 isRegister ('r' : xs) | all isDigit xs && length xs > 0 = True
@@ -89,20 +91,22 @@ isRegister _ = False
 
 operand :: Parser Operand
 operand = choice
-  [ Reg <$> try register
+  [ Reg <$> register
   , Label <$> label
   , Int <$> int
-  ]
+  ] <?> "operand"
 
 int :: Parser Int
 int = fromIntegral <$> integer lexer
 
 label :: Parser String
-label = do
-  s <- ident
-  if isRegister s
-    then unexpected "register"
-    else return s
+label = try l <?> "label"
+  where
+    l = do
+      s <- ident
+      if isRegister s
+        then unexpected "register"
+        else return s
 
 assign :: Parser ()
 assign = reservedOp lexer ":="
