@@ -1,3 +1,4 @@
+#![cfg(ignore)]
 use TypeCheck;
 
 use std::collections::HashMap;
