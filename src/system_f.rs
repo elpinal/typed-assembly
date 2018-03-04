@@ -71,3 +71,43 @@ mod lambda_k {
 
     struct Context(Vec<Type>);
 }
+
+mod lambda_c {
+    use super::*;
+
+    enum Type {
+        Var(usize),
+        Int,
+        ForallArr(usize, Vec<Type>),
+        Exist(Box<Type>),
+        Tuple(Vec<Type>),
+    }
+
+    struct Ann(Type, Box<Value>);
+
+    enum Value {
+        Var(usize),
+        Int(isize),
+        Fix(usize, Vec<Type>, Term),
+        Tuple(Ann),
+        Inst(Ann, Type),
+        Pack(Type, Ann, Type),
+    }
+
+    enum Decl {
+        Assign(Ann),
+        Proj(Ann, usize),
+        Arith(Prim, Ann, Ann),
+        Unpack(Ann), // Introduces 2 variables.
+    }
+
+    enum Term {
+        Let(Decl, Box<Term>),
+        InstApp(Ann, Vec<Type>, Vec<Ann>),
+        If0(Ann, Box<Term>, Box<Term>),
+        Halt(Type, Ann),
+        Replace(Ann, Vec<Type>, Vec<Ann>, Ann, Vec<Ann>),
+    }
+
+    struct Context(Vec<Type>);
+}
