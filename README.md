@@ -7,3 +7,8 @@ Benjamin C. Pierce, editor, _"Advanced Topics in Types and Programming Languages
 
 Greg Morrisett, David Walker, Karl Crary, and Neal Grew, _"From System F to Typed Assembly Language"_,
 ACM Transactions on Programming Languages and Systems, 21(3):528-569, May 1999.
+
+## See also
+
+- [typed-videocore](https://github.com/elpinal/typed-videocore)
+- [ELT0](https://github.com/elpinal/elt0)
